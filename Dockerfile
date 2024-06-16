@@ -1,11 +1,19 @@
 FROM python:3.11-slim
 
-
 WORKDIR /app
-COPY . /app
 
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt /app/
+
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
+COPY . /app/
+
+COPY entry.sh /app/entry.sh
+RUN chmod +x /app/entry.sh
 
 EXPOSE 8080
 
-CMD ["python", "watcher.py"]
+ENTRYPOINT ["/app/entry.sh"]
+
+CMD ["python", "/app/watcher.py"]
+

@@ -12,7 +12,13 @@ import os
 import configs as cfg
 import sys
 
-load_dotenv(".env")
+try:
+    load_dotenv(".env")
+except Exception as e:
+    print(e.args[0])
+else:
+    print("Env Loaded Successfully")
+
 
 endpoints = [
     cfg.server_ips["Stage"],

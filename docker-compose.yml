@@ -1,10 +1,19 @@
 services:
   endpoint_checker:
     build: .
-    container_name: endpoint_checker_container
+    container_name: endpoint_checker
     ports:
       - "8080:8080"
     volumes:
-      - ./endpoint_checker.log:/app/endpoint_checker.log
-      
+      - ./logs:/app/logs
+      # - ./endpoint_checker.log:/app/endpoint_checker.log
+
+    environment:
+      - SMTP_SERVER=${SMTP_SERVER}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - TO_EMAIL=${TO_EMAIL}
+      - MAX_RETRIES=${MAX_RETRIES}
+      - CHECK_INTERVAL=${CHECK_INTERVAL}
     restart: unless-stopped
