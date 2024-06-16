@@ -1,0 +1,10 @@
+services:
+  endpoint_checker:
+    build: .
+    container_name: endpoint_checker_container
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./endpoint_checker.log:/app/endpoint_checker.log
+      
+    restart: unless-stopped
