@@ -6,18 +6,13 @@ error_codes = {
   403: "Unauthorized"
 }
 
-db_ips = {
-  
-}
 
-dev_server_ips = {
-  "EC2_8081":"http://15.206.0.116:8081",
+server_ips = {
+  # "EC2_8081":"http://15.206.0.116:8081",
   "EC2_8082":"http://15.206.0.116:8082",
-  "EC2_8080":"http://15.206.0.116:8080"
-}
-
-eks_ips ={
-  "Stage": "https://stage-open-data.aws.ondc.org/"
+  # "EC2_8080":"http://15.206.0.116:8080",
+  "Stage": "https://stage-open-data.aws.ondc.org/",
+  "Prod":"https://open-data.aws.ondc.org/"
 }
 
 django_apis = {
