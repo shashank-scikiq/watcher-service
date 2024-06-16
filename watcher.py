@@ -12,25 +12,20 @@ import os
 import configs as cfg
 import sys
 
-# List of endpoints to check
+load_dotenv(".env")
+
 endpoints = [
-    # "http://example1.com",
-    # "http://example2.com",
-    # Add more endpoints as needed
     cfg.server_ips["Stage"],
     cfg.server_ips["Prod"],
     cfg.server_ips["EC2_8082"]
 ]
-load_dotenv(".env")
 
-# Email configuration
 SMTP_SERVER = os.getenv("SMTP_SERVER", default=None)
 SMTP_PORT = os.getenv("SMTP_PORT", default=None)
 SMTP_USER = os.getenv("SMTP_USER", default=None)
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", default=None)
 TO_EMAIL = os.getenv("TO_EMAIL", default=None)
 
-# Retry configuration
 MAX_RETRIES = int(os.getenv("MAX_RETRIES"))
 CHECK_INTERVAL = int(os.getenv("CHECK_INTERVAL")) *60
 
@@ -41,6 +36,9 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s',
                     handlers=[logging.FileHandler("endpoint_checker.log"),
                               logging.StreamHandler()])
+
+# Send Email
+# ===========================================================================
 
 def send_email(subject, body):
     msg = MIMEText(body)
@@ -53,6 +51,8 @@ def send_email(subject, body):
         server.login(SMTP_USER, SMTP_PASSWORD)
         server.sendmail(SMTP_USER, TO_EMAIL, msg.as_string())
 
+# Check Endpoints
+# ===========================================================================
 async def check_endpoint(session, url, retries=0, results=None):
     try:
         async with session.get(url, timeout=10) as response:
@@ -87,11 +87,16 @@ async def check_all_endpoints():
 
     logging.info("Endpoint check complete.")
 
+# Schedule Checks
+# ===========================================================================
+
 def schedule_checks():
     next_run_time = datetime.now() + timedelta(seconds=CHECK_INTERVAL)
     logging.info(f"Scheduled next check at {next_run_time}.")
     asyncio.run(check_all_endpoints())
 
+# Main application
+# ===========================================================================
 def main():
     logging.info("Starting endpoint checker script.")
     schedule.every(CHECK_INTERVAL).seconds.do(schedule_checks)
@@ -101,6 +106,7 @@ def main():
         time.sleep(1)
 
 # Flask application
+# ===========================================================================
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
@@ -114,9 +120,7 @@ def get_logs():
     return send_file('endpoint_checker.log', mimetype='text/plain')
 
 if __name__ == "__main__":
-    # Start the background task
     import threading
     threading.Thread(target=main, daemon=True).start()
 
-    # Start the Flask app
     app.run(host='0.0.0.0', port=8080)
